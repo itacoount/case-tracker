@@ -1,4 +1,4 @@
-export function EmptyTask() {
+export default function EmptyTask() {
   return (
     <div className="w-full flex flex-col items-center justify-center h-[300px] gap-4 p-8 text-center">
       <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">

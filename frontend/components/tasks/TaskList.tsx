@@ -5,10 +5,10 @@ import TaskCard from "./TaskCard";
 import { useDeleteTask, useTasks, useUpdateTask } from "@/app/hooks/useTasks";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Task } from "@/app/lib/types";
-import { CustomPagination } from "./CustomPagination";
+import { Task } from "@/lib/types";
 
-import { EmptyTask } from "./EmptyTask";
+import  EmptyTask  from "./EmptyTask";
+import CustomPagination from "./CustomPagination";
 
 const PAGE_SIZE = 9;
 

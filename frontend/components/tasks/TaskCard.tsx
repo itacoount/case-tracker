@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Task } from "@/app/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -20,7 +19,8 @@ import { Pencil } from "lucide-react";
 import TaskForm from "./TaskForm";
 import { TaskDeleteDialog } from "./TaskDeleteDialog";
 import { Badge } from "@/components/ui/badge";
-import { getBadgeVariant } from "@/app/utils";
+import { getBadgeVariant } from "@/lib/utils";
+import { Task } from "@/lib/types";
 
 interface TaskCardProps {
   task: Task;

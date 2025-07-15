@@ -15,7 +15,7 @@ interface CustomPaginationProps {
   className?: string;
 }
 
-export function CustomPagination({
+export default function CustomPagination({
   page,
   totalPages,
   onPageChange,

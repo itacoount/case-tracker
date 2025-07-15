@@ -18,7 +18,7 @@ import {
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import { useState } from "react";
-import { Task } from "@/app/lib/types";
+import { Task } from "@/lib/types";
 
 type CaseTrackerProps = {
   // tasks?: any[];
