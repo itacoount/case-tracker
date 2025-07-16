@@ -24,21 +24,22 @@ import { Label } from "@/components/ui/label";
 import { Search, Plus } from "lucide-react";
 import TaskForm from "./TaskForm";
 import { TASK_STATUSES } from "@/constant";
+import { Badge } from "../ui/badge";
+import { getBadgeVariant } from "@/lib/utils";
+import { TaskStatus } from "@/lib/types";
 
 interface HeaderProps {
   createTask: (data: any) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onStatusChange: (status: string) => void;
-  onSearchChange: (query: string) => void;
+  applyFilters: (status: string, query: string) => void;
 }
 
 export default function Header({
   createTask,
   open,
   onOpenChange,
-  onStatusChange,
-  onSearchChange,
+  applyFilters,
 }: HeaderProps) {
   const [status, setStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,60 +50,82 @@ export default function Header({
   );
 
   const handleApplyFilters = () => {
-    onStatusChange(status);
-    onSearchChange(searchQuery);
+    applyFilters(status, searchQuery);
   };
 
-  const renderFilterPopover = () => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex-1 bg-white text-black justify-start"
-        >
-          <Search className="w-4 h-4 mr-2" />
-          Search
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-72 p-4 space-y-4">
-        <div>
-          <Label htmlFor="search">Search</Label>
-          <Input
-            id="search"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by task title..."
-            className="text-black mt-1"
-          />
-        </div>
-        <div>
-          <Label htmlFor="status">Status</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="mt-1 bg-white text-black w-full">
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusOptions.map(s => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button className="w-full" onClick={handleApplyFilters}>
-          Apply Filters
-        </Button>
-      </PopoverContent>
-    </Popover>
-  );
+  const renderFilterPopover = () => {
+    const isFiltering = searchQuery.trim() !== "" || status !== "all";
 
-  const renderCreateButton = () => (
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <div className="flex items-center gap-2 flex-1">
+            {/* Search Input with Icon */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Input
+                readOnly
+                className={`pl-10 pr-3 py-2 text-sm bg-white text-black cursor-pointer border border-gray-300 rounded-md hover:border-gray-400 transition-all w-full ${
+                  isFiltering ? "font-medium border-gray-500 shadow-sm" : ""
+                }`}
+                value={searchQuery}
+                placeholder="Search tasks..."
+              />
+            </div>
+
+            {/* Status Badge (only if filtered) */}
+            {status !== "all" && (
+              <Badge variant={getBadgeVariant(status as TaskStatus)}>
+                {status}
+              </Badge>
+            )}
+          </div>
+        </PopoverTrigger>
+
+        <PopoverContent className="w-72 p-4 space-y-4">
+          <>
+            <Label htmlFor="search">Search</Label>
+            <Input
+              id="search"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by task title..."
+              className="text-black mt-1"
+            />
+          </>
+          <>
+            <Label htmlFor="status">Status</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="mt-1 bg-white text-black w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map(s => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
+          <Button className="w-full" onClick={handleApplyFilters}>
+            Apply Filters
+          </Button>
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  const renderCreateButton = (isDesktop = false) => (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="flex-1 bg-white text-black hover:bg-gray-100 justify-start">
-          <Plus className="w-4 h-4 mr-2" />
-          New Task
+        <Button
+          className={`${
+            isDesktop ? "px-4 py-2 min-w-[140px]" : "w-10 h-10 p-0"
+          } bg-white text-black hover:bg-gray-100 flex items-center justify-center`}
+        >
+          <Plus className={`w-4 h-4 ${isDesktop ? "mr-2" : ""}`} />
+          {isDesktop ? "Create Task" : ""}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-sm">
@@ -122,7 +145,7 @@ export default function Header({
           <h1 className="text-2xl font-bold">Task Manager</h1>
           <div className="flex items-center gap-4">
             {renderFilterPopover()}
-            {renderCreateButton()}
+            {renderCreateButton(true)}
           </div>
         </div>
 

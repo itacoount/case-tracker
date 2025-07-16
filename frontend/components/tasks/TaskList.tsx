@@ -14,10 +14,16 @@ import { PAGE_TASK_SIZE } from "@/constant";
 type TaskListProps = {
   tasks: Task[];
   onDelete: (id: string) => void;
-  onUpdate: () => void;
+  onUpdate: (task: Task) => void;
+  isFiltered: boolean;
 };
 
-export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
+export default function TaskList({
+  tasks,
+  onDelete,
+  onUpdate,
+  isFiltered,
+}: TaskListProps) {
   const [page, setPage] = useState(1);
   // const { data: tasks, isLoading, error } = useTasks();
   // const { mutate: deleteTask } = useDeleteTask();
@@ -58,7 +64,7 @@ export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
               </div>
             ))
           ) : (
-            <EmptyTask />
+            <EmptyTask isFiltered={isFiltered} />
           )}
         </div>
 
