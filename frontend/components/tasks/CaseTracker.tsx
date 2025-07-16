@@ -19,6 +19,7 @@ import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import { useState } from "react";
 import { Task } from "@/lib/types";
+import Header from "./Header";
 
 type CaseTrackerProps = {
   // tasks?: any[];
@@ -41,15 +42,15 @@ export default function CaseTracker({}: CaseTrackerProps) {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   const createTask = (task: Omit<Task, "id">) => {
     const newTask = { ...task, id: Date.now().toString() };
     setTasks(prev => [...prev, newTask]);
+    setIsCreateTaskModalOpen(false);
   };
 
   const updateTask = (updatedTask: Task) => {
-    console.log("updatedTask", updatedTask);
-
     setTasks(prev =>
       prev.map(task => (task.id === updatedTask.id ? updatedTask : task))
     );
@@ -61,23 +62,13 @@ export default function CaseTracker({}: CaseTrackerProps) {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Task Manager</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>Create New Task</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Tasks</DialogTitle>
-            </DialogHeader>
-            <TaskForm onSubmit={createTask} />
-          </DialogContent>
-        </Dialog>
-      </div>
-
+    <>
+      <Header
+        createTask={createTask}
+        open={isCreateTaskModalOpen}
+        onOpenChange={setIsCreateTaskModalOpen}
+      />
       <TaskList tasks={tasks} onDelete={deleteTask} onUpdate={updateTask} />
-    </div>
+    </>
   );
 }

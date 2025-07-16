@@ -3,3 +3,5 @@ export const TASK_STATUSES = [
   { value: "in-progress", label: "In Progress" },
   { value: "done", label: "Done" },
 ] as const;
+
+export const PAGE_TASK_SIZE = 9;

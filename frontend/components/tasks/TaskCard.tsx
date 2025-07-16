@@ -53,7 +53,7 @@ export default function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
               </TooltipTrigger>
               <TooltipContent>Edit Task</TooltipContent>
             </Tooltip>
-            <DialogContent>
+            <DialogContent onCloseAutoFocus={e => e.preventDefault()}>
               <DialogHeader>
                 <DialogTitle>Edit Task</DialogTitle>
               </DialogHeader>
@@ -77,6 +77,7 @@ export default function TaskCard({ task, onDelete, onUpdate }: TaskCardProps) {
           className={`text-sm text-gray-600 line-clamp-2 mb-2 min-h-[40px] ${
             task.description ? "max-h-[40px]" : ""
           }`}
+          title={task.description}
         >
           {task.description || "Enter description..."}
         </p>

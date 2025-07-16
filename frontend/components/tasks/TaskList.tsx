@@ -4,13 +4,12 @@ import { useState } from "react";
 import TaskCard from "./TaskCard";
 import { useDeleteTask, useTasks, useUpdateTask } from "@/app/hooks/useTasks";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Task } from "@/lib/types";
 
-import  EmptyTask  from "./EmptyTask";
+import EmptyTask from "./EmptyTask";
 import CustomPagination from "./CustomPagination";
-
-const PAGE_SIZE = 9;
+import TaskListSkeleton from "./TaskListSkeleton";
+import { PAGE_TASK_SIZE } from "@/constant";
 
 type TaskListProps = {
   tasks: Task[];
@@ -26,9 +25,9 @@ export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
 
   // Pagination
   const totalTasks = tasks?.length || 0;
-  const totalPages = Math.ceil(totalTasks / PAGE_SIZE);
+  const totalPages = Math.ceil(totalTasks / PAGE_TASK_SIZE);
   const paginatedTasks =
-    tasks?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) || [];
+    tasks?.slice((page - 1) * PAGE_TASK_SIZE, page * PAGE_TASK_SIZE) || [];
 
   const isLoading = false;
   // if (error)
@@ -41,21 +40,14 @@ export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
   console.log("tasks", tasks);
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-8 space-y-6 -mt-4">
       <Card className="p-6">
         <div
           className="flex flex-wrap content-start gap-4 overflow-y-auto"
           style={{ alignContent: "flex-start" }}
         >
           {isLoading ? (
-            Array.from({ length: PAGE_SIZE }).map((_, index) => (
-              <div
-                key={index}
-                className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.33%-16px)]"
-              >
-                <Skeleton className="h-[150px] w-full rounded-lg" />
-              </div>
-            ))
+            <TaskListSkeleton />
           ) : paginatedTasks.length > 0 ? (
             paginatedTasks.map(task => (
               <div
@@ -75,7 +67,7 @@ export default function TaskList({ tasks, onDelete, onUpdate }: TaskListProps) {
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
-            className="-mt-2 -mb-2"
+            className="-mt-4 -mb-4"
           />
         )}
       </Card>
