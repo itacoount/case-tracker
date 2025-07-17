@@ -21,12 +21,13 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import TaskForm from "./TaskForm";
 import { TASK_STATUSES } from "@/constant";
 import { Badge } from "../ui/badge";
 import { getBadgeVariant } from "@/lib/utils";
 import { TaskStatus } from "@/lib/types";
+import useIsMobile from "@/hooks/useIsMobile";
 
 interface HeaderProps {
   createTask: (data: any) => void;
@@ -34,6 +35,8 @@ interface HeaderProps {
   onOpenChange: (open: boolean) => void;
   applyFilters: (status: string, query: string) => void;
 }
+
+const title = "Task Manager";
 
 export default function Header({
   createTask,
@@ -43,6 +46,9 @@ export default function Header({
 }: HeaderProps) {
   const [status, setStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
+
+  const isMobile = useIsMobile();
 
   const statusOptions = useMemo(
     () => [{ value: "all", label: "All" }, ...TASK_STATUSES],
@@ -50,6 +56,7 @@ export default function Header({
   );
 
   const handleApplyFilters = () => {
+    setIsFilterPopoverOpen(false);
     applyFilters(status, searchQuery);
   };
 
@@ -57,14 +64,22 @@ export default function Header({
     const isFiltering = searchQuery.trim() !== "" || status !== "all";
 
     return (
-      <Popover>
+      <Popover open={isFilterPopoverOpen} onOpenChange={setIsFilterPopoverOpen}>
         <PopoverTrigger asChild>
           <div className="flex items-center gap-2 flex-1">
-            {/* Search Input with Icon */}
+            {status !== "all" && (
+              <Badge
+                variant={getBadgeVariant(status as TaskStatus)}
+                className="cursor-pointer"
+              >
+                {status}
+              </Badge>
+            )}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input
                 readOnly
+                disabled={isFilterPopoverOpen}
                 className={`pl-10 pr-3 py-2 text-sm bg-white text-black cursor-pointer border border-gray-300 rounded-md hover:border-gray-400 transition-all w-full ${
                   isFiltering ? "font-medium border-gray-500 shadow-sm" : ""
                 }`}
@@ -72,27 +87,30 @@ export default function Header({
                 placeholder="Search tasks..."
               />
             </div>
-
-            {/* Status Badge (only if filtered) */}
-            {status !== "all" && (
-              <Badge variant={getBadgeVariant(status as TaskStatus)}>
-                {status}
-              </Badge>
-            )}
           </div>
         </PopoverTrigger>
 
         <PopoverContent className="w-72 p-4 space-y-4">
-          <>
-            <Label htmlFor="search">Search</Label>
+          <Label htmlFor="search">Search</Label>
+          <div className="relative">
             <Input
               id="search"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by task title..."
-              className="text-black mt-1"
+              className="text-black pr-10"
             />
-          </>
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+              >
+                <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+              </button>
+            )}
+          </div>
+
           <>
             <Label htmlFor="status">Status</Label>
             <Select value={status} onValueChange={setStatus}>
@@ -140,25 +158,25 @@ export default function Header({
   return (
     <header className="sticky top-0 z-50 w-full bg-black text-white shadow-md">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Desktop */}
-        <div className="hidden md:flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold">Task Manager</h1>
-          <div className="flex items-center gap-4">
-            {renderFilterPopover()}
-            {renderCreateButton(true)}
+        {isMobile ? (
+          <div className="md:hidden py-4 space-y-4">
+            <div className="text-center">
+              <h1 className="text-xl font-bold">{title}</h1>
+            </div>
+            <div className="flex flex-row gap-2 px-2">
+              {renderFilterPopover()}
+              {renderCreateButton()}
+            </div>
           </div>
-        </div>
-
-        {/* Mobile */}
-        <div className="md:hidden py-4 space-y-4">
-          <div className="text-center">
-            <h1 className="text-xl font-bold">Task Manager</h1>
+        ) : (
+          <div className="hidden md:flex items-center justify-between py-4">
+            <h1 className="text-2xl font-bold">{title}</h1>
+            <div className="flex items-center gap-4">
+              {renderFilterPopover()}
+              {renderCreateButton(true)}
+            </div>
           </div>
-          <div className="flex flex-row gap-2 px-2">
-            {renderFilterPopover()}
-            {renderCreateButton()}
-          </div>
-        </div>
+        )}
       </div>
     </header>
   );
